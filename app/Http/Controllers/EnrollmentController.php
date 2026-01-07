@@ -2,33 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Enrollment;
+use App\Http\Requests\StoreEnrollmentRequest;
+use App\Services\EnrollmentService;
 use App\Models\Course;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class EnrollmentController extends Controller
 {
-    public function create()
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct(
+        private EnrollmentService $enrollmentService
+    ) {}
+
+    /**
+     * Show the enrollment form.
+     */
+    public function create(): View
     {
         $courses = Course::active()->get();
 
         return view('enrollment.create', compact('courses'));
     }
 
-    public function store(Request $request)
+    /**
+     * Store a new enrollment.
+     */
+    public function store(StoreEnrollmentRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'student_name' => ['required', 'string', 'max:200'],
-            'birth_date' => ['required', 'date', 'before:today'],
-            'parent_name' => ['required', 'string', 'max:200'],
-            'parent_email' => ['required', 'email', 'max:320'],
-            'parent_phone' => ['required', 'string', 'max:20'],
-            'address' => ['nullable', 'string'],
-            'course_id' => ['nullable', 'exists:courses,id'],
-            'level' => ['required', 'in:infantil,fundamental1,fundamental2,medio'],
-        ]);
-
-        $enrollment = Enrollment::create($validated);
+        $this->enrollmentService->create($request->validated());
 
         return redirect()
             ->route('home')

@@ -50,11 +50,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'require_email_verification' => 'boolean',
+            'last_signed_in' => 'datetime',
         ];
     }
 
     /**
-     * Check if user is admin
+     * Check if the user has admin role.
      */
     public function isAdmin(): bool
     {
@@ -62,10 +63,29 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Check if user is parent
+     * Check if the user has parent role.
      */
     public function isParent(): bool
     {
         return $this->role === 'parent';
     }
+
+    /**
+     * Check if the user has standard user role.
+     */
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
+
+    /**
+     * Determine if the user's email must be verified.
+     * 
+     * Overrides the default behavior to check the require_email_verification flag.
+     */
+    public function mustVerifyEmail(): bool
+    {
+        return $this->require_email_verification ?? true;
+    }
 }
+

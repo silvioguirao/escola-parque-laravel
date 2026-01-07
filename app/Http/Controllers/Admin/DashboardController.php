@@ -8,12 +8,18 @@ use App\Models\Enrollment;
 use App\Models\Contact;
 use App\Models\News;
 use App\Models\Course;
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index()
+    /**
+     * Display the admin dashboard with statistics and recent activity.
+     * 
+     * Shows key metrics and recent enrollments/contacts for quick overview.
+     */
+    public function index(): View
     {
+        // Calculate key statistics
         $stats = [
             'total_users' => User::count(),
             'pending_enrollments' => Enrollment::where('status', 'pending')->count(),
@@ -22,8 +28,15 @@ class DashboardController extends Controller
             'active_courses' => Course::where('active', true)->count(),
         ];
 
-        $recentEnrollments = Enrollment::with('course')->latest()->take(5)->get();
-        $recentContacts = Contact::latest()->take(5)->get();
+        // Get recent activity with related data
+        $recentEnrollments = Enrollment::with('course')
+            ->latest()
+            ->take(5)
+            ->get();
+        
+        $recentContacts = Contact::latest()
+            ->take(5)
+            ->get();
 
         return view('admin.dashboard', compact('stats', 'recentEnrollments', 'recentContacts'));
     }
