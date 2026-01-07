@@ -6,7 +6,6 @@ use App\Models\Enrollment;
 use App\Models\User;
 use App\Enums\EnrollmentStatus;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 
 class EnrollmentService
 {
