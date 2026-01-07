@@ -32,11 +32,15 @@ Route::get('/galeria/{id}', [GalleryController::class, 'show'])->name('gallery.s
 
 // Enrollment form
 Route::get('/matricula', [EnrollmentController::class, 'create'])->name('enrollment.create');
-Route::post('/matricula', [EnrollmentController::class, 'store'])->name('enrollment.store');
+Route::post('/matricula', [EnrollmentController::class, 'store'])
+    ->middleware('throttle:5,1') // 5 attempts per minute
+    ->name('enrollment.store');
 
 // Contact form
 Route::get('/contato', [ContactController::class, 'create'])->name('contact.create');
-Route::post('/contato', [ContactController::class, 'store'])->name('contact.store');
+Route::post('/contato', [ContactController::class, 'store'])
+    ->middleware('throttle:10,1') // 10 attempts per minute
+    ->name('contact.store');
 
 // Authenticated user routes
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreContactRequest;
-use App\Models\Contact;
+use App\Services\ContactService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class ContactController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct(
+        private ContactService $contactService
+    ) {}
+
     /**
      * Show the contact form.
      */
@@ -22,11 +29,7 @@ class ContactController extends Controller
      */
     public function store(StoreContactRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-        $validated['submitted_at'] = now();
-        $validated['status'] = 'new';
-
-        Contact::create($validated);
+        $this->contactService->create($request->validated());
 
         return redirect()
             ->route('home')

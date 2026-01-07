@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEnrollmentRequest;
-use App\Models\Enrollment;
+use App\Services\EnrollmentService;
 use App\Models\Course;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class EnrollmentController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct(
+        private EnrollmentService $enrollmentService
+    ) {}
+
     /**
      * Show the enrollment form.
      */
@@ -25,11 +32,7 @@ class EnrollmentController extends Controller
      */
     public function store(StoreEnrollmentRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-        $validated['submitted_at'] = now();
-        $validated['status'] = 'pending';
-
-        Enrollment::create($validated);
+        $this->enrollmentService->create($request->validated());
 
         return redirect()
             ->route('home')
