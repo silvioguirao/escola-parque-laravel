@@ -2,25 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreContactRequest;
 use App\Models\Contact;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ContactController extends Controller
 {
-    public function create()
+    /**
+     * Show the contact form.
+     */
+    public function create(): View
     {
         return view('contact.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Store a new contact message.
+     */
+    public function store(StoreContactRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:200'],
-            'email' => ['required', 'email', 'max:320'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'subject' => ['required', 'string', 'max:200'],
-            'message' => ['required', 'string'],
-        ]);
+        $validated = $request->validated();
+        $validated['submitted_at'] = now();
+        $validated['status'] = 'new';
 
         Contact::create($validated);
 
